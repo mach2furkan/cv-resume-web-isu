@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+            overflow-x: hidden;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(63, 94, 251, 0.8), rgba(252, 70, 107, 0.3));
+            mix-blend-mode: screen;
+            z-index: -1;
+            animation: rotateNebula 30s linear infinite;
+        }
+        @keyframes rotateNebula {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            z-index: 1;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        h1 span {
+            border-right: 2px solid white;
+            display: inline-block;
+            animation: typing 2s steps(22), blink 0.5s step-end infinite;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 0;
+        }
+        @keyframes typing {
+            to { width: 100%; }
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+        .music-toggle, .theme-toggle, .font-size-adjust {
+            position: fixed;
+            bottom: 20px;
+            background: #007BFF;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 3;
+        }
+        .theme-toggle { right: 100px; }
+        .font-size-adjust { right: 180px; }
+        .progress-container {
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-bar span {
+            display: block;
+            height: 10px;
+            background: linear-gradient(90deg, #4caf50, #00bcd4);
+            width: 0;
+            animation: load 2s forwards;
+        }
+        @keyframes load {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        .error {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .planet {
+            position: fixed;
+            bottom: 10%;
+            right: 10%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #f9d423, #ff4e50);
+            border-radius: 50%;
+            animation: orbit 10s linear infinite;
+            z-index: -1;
+        }
+        @keyframes orbit {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-50px, 50px); }
+            50% { transform: translate(0, 100px); }
+            75% { transform: translate(50px, 50px); }
+            100% { transform: translate(0, 0); }
+        }
+        .quote {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD700;
+            font-style: italic;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        .download-pdf {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            background-color: #28a745;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .download-pdf:hover {
+            background-color: #218838;
+        }
+        .contact-section {
+            margin-top: 30px;
+        }
+        .contact-section h3 {
+            text-align: center;
+            color: #FFD700;
+        }
+        .contact-section p {
+            text-align: center;
+            color: white;
+        }
+        .interactive-icon {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #f06292;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(240, 98, 146, 0.7);
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .testimonial {
+            margin-top: 40px;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .captcha-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .captcha-container img {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .captcha-container input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+        }
+        .captcha-container button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 5;
+        }
+        .feedback-form {
+            margin-top: 20px;
+            padding: 15px;
+            background: #444;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        .feedback-form textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .feedback-form button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .language-switcher {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #FF5733;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .floating-button {
+            position: fixed;
+            top: 50%;
+            left: 90%;
+            transform: translate(-50%, -50%);
+            background-color: #FF4500;
+            padding: 15px;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -45%) scale(1.1); }
+        }
+        .rotating-text {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #00FF00;
+            animation: rotateText 5s linear infinite;
+        }
+        @keyframes rotateText {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<!-- Starry Background -->
+<canvas id="starCanvas"></canvas>
+<canvas id="effectCanvas"></canvas>
+<canvas id="galaxyCanvas"></canvas>
+<div class="nebula"></div>
+<div class="planet"></div>
+<div class="interactive-icon"></div>
+
+<div class="rotating-text">Welcome to the CV Creator!</div>
+<div class="floating-button">+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <h1><span>Create Your CV</span></h1>
+    <form id="cvForm">
+        <h2>Personal Information</h2>
+        <label for="profilePicture">1. Profile Picture</label>
+        <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
+        <br>
+        <label for="fullName">2. Full Name</label>
+        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+        <br>
+        <label for="email">3. Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        <br>
+        <label for="skills">4. Skills</label>
+        <textarea id="skills" name="skills" placeholder="List your skills" required></textarea>
+        <br>
+        <label for="languages">5. Languages</label>
+        <textarea id="languages" name="languages" placeholder="List the languages you know"></textarea>
+        <br>
+        <label for="experience">6. Experience</label>
+        <textarea id="experience" name="experience" placeholder="Describe your experience"></textarea>
+        <br>
+        <label for="references">7. References</label>
+        <textarea id="references" name="references" placeholder="Provide references if any"></textarea>
+        <br>
+        <label for="certifications">8. Certifications</label>
+        <textarea id="certifications" name="certifications" placeholder="List your certifications"></textarea>
+        <br>
+        <label for="achievements">9. Achievements</label>
+        <textarea id="achievements" name="achievements" placeholder="Highlight your key achievements"></textarea>
+        <br>
+        <label for="hobbies">10. Hobbies</label>
+        <textarea id="hobbies" name="hobbies" placeholder="What are your hobbies?"></textarea>
+        <br>
+        <label for="projects">11. Projects</label>
+        <textarea id="projects" name="projects" placeholder="Describe projects you've worked on"></textarea>
+        <br>
+        <label for="leadership">12. Have you held any leadership positions?</label>
+        <textarea id="leadership" name="leadership" placeholder="Describe leadership roles"></textarea>
+        <br>
+        <label for="challenges">13. How do you handle challenges at work?</label>
+        <textarea id="challenges" name="challenges" placeholder="Describe your approach"></textarea>
+        <br>
+        <label for="feedback">14. How do you handle feedback?</label>
+        <textarea id="feedback" name="feedback" placeholder="Describe your approach"></textarea>
+        <br>
+        <label for="adaptability">15. Can you describe a time you adapted to change?</label>
+        <textarea id="adaptability" name="adaptability" placeholder="Describe your experience"></textarea>
+        <br>
+        <label for="technology">16. Are you comfortable with technology?</label>
+        <textarea id="technology" name="technology" placeholder="Describe your proficiency"></textarea>
+        <br>
+        <label for="teamwork">17. How do you work in a team?</label>
+        <textarea id="teamwork" name="teamwork" placeholder="Describe teamwork skills"></textarea>
+        <br>
+        <label for="independence">18. How do you work independently?</label>
+        <textarea id="independence" name="independence" placeholder="Describe independent work"></textarea>
+        <br>
+        <label for="motivation">19. What motivates you at work?</label>
+        <textarea id="motivation" name="motivation" placeholder="Describe motivations"></textarea>
+        <br>
+        <label for="timeManagement">20. How do you manage your time?</label>
+        <textarea id="timeManagement" name="timeManagement" placeholder="Describe time management"></textarea>
+        <br>
+        <label for="networking">21. Are you skilled at networking?</label>
+        <textarea id="networking" name="networking" placeholder="Describe networking skills"></textarea>
+        <br>
+        <label for="tools">22. What tools or software are you proficient in?</label>
+        <textarea id="tools" name="tools" placeholder="List tools/software"></textarea>
+        <br>
+        <label for="continuousLearning">23. Do you engage in continuous learning?</label>
+        <textarea id="continuousLearning" name="continuousLearning" placeholder="Describe learning methods"></textarea>
+        <br>
+        <label for="remoteWork">24. Are you comfortable with remote work?</label>
+        <textarea id="remoteWork" name="remoteWork" placeholder="Describe remote work experience"></textarea>
+        <br>
+        <label for="diversity">25. How do you value diversity in the workplace?</label>
+        <textarea id="diversity" name="diversity" placeholder="Describe your perspective"></textarea>
+        <br>
+        <label for="communication">26. What is your communication style?</label>
+        <textarea id="communication" name="communication" placeholder="Describe communication style"></textarea>
+        <br>
+        <label for="problemSolving">27. Can you describe your problem-solving skills?</label>
+        <textarea id="problemSolving" name="problemSolving" placeholder="Describe your approach"></textarea>
+        <br>
+        <label for="presentation">28. Do you have experience with presentations?</label>
+        <textarea id="presentation" name="presentation" placeholder="Describe your experience"></textarea>
+        <br>
+        <label for="decisionMaking">29. How do you make decisions under pressure?</label>
+        <textarea id="decisionMaking" name="decisionMaking" placeholder="Describe your process"></textarea>
+        <br>
+        <!-- Continue numbering up to 60 in similar format -->
+    </form>
+</div>
+        <br>
+<style>
+    .captcha-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .captcha-box {
+        display: inline-block;
+        position: relative;
+    }
+
+    .captcha-image {
+        display: inline-block;
+        width: 150px;
+        height: 50px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .refresh-captcha {
+        position: absolute;
+        top: 50%;
+        right: -30px;
+        transform: translateY(-50%);
+        background: #007BFF;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .refresh-captcha:hover {
+        background: #0056b3;
+    }
+
+    .captcha-input {
+        margin-top: 10px;
+        width: 200px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .verify-captcha {
+        margin-top: 10px;
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .verify-captcha:hover {
+        background: #218838;
+    }
+</style>
+
+<div class="captcha-container">
+    <div class="captcha-box">
+        <img src="https://example.com/api/get-captcha" alt="Captcha" class="captcha-image" id="captchaImage">
+        <button type="button" id="refreshCaptcha" class="refresh-captcha">⟳</button>
+    </div>
+    <input type="text" id="captchaInput" class="captcha-input" placeholder="Enter captcha">
+    <button type="button" id="verifyCaptcha" class="verify-captcha">Verify</button>
+</div>
+
+<script>
+    const captchaImage = document.getElementById('captchaImage');
+    const refreshCaptchaButton = document.getElementById('refreshCaptcha');
+    const verifyCaptchaButton = document.getElementById('verifyCaptcha');
+    const captchaInput = document.getElementById('captchaInput');
+
+    // API URL for CAPTCHA
+    const captchaAPI = 'https://example.com/api/get-captcha';
+    const verifyAPI = 'https://example.com/api/verify-captcha';
+
+    // Function to refresh the CAPTCHA
+    const refreshCaptcha = () => {
+        // Append a timestamp to bypass cache
+        captchaImage.src = `${captchaAPI}?t=${new Date().getTime()}`;
+    };
+
+    // Function to verify CAPTCHA
+    const verifyCaptcha = async () => {
+        const captchaValue = captchaInput.value;
+
+        if (!captchaValue) {
+            alert('Please enter the CAPTCHA value.');
+            return;
+        }
+
+        try {
+            const response = await fetch(verifyAPI, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ captcha: captchaValue }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('CAPTCHA verified successfully!');
+            } else {
+                alert('CAPTCHA verification failed. Please try again.');
+                refreshCaptcha();
+            }
+        } catch (error) {
+            console.error('Error verifying CAPTCHA:', error);
+            alert('An error occurred. Please try again.');
+        }
+    };
+
+    // Event listeners
+    refreshCaptchaButton.addEventListener('click', refreshCaptcha);
+    verifyCaptchaButton.addEventListener('click', verifyCaptcha);
+
+    // Initial CAPTCHA load
+    refreshCaptcha();
+</script>
+
+<a id="downloadPdf" class="download-pdf">Download PDF</a>
+        <button type="submit">Create CV</button>
+    </form>
+
+    <h2>Skills Progress</h2>
+    <div class="progress-container">
+        <div class="progress-bar"><span style="width: 70%;"></span></div>
+        <div class="progress-bar"><span style="width: 50%;"></span></div>
+    </div>
+    <button id="saveJson">Save as JSON</button>
+
+    <div class="feedback-form">
+        <h3>Feedback</h3>
+        <textarea placeholder="Leave your feedback here..."></textarea>
+        <button>Submit Feedback</button>
+    </div>
+</div>
+
+<div class="quote">"The stars are not in the sky, but in your CV."</div>
+
+<div class="contact-section">
+    <h3>Contact Us</h3>
+    <p>Email: furkanasknn@gmail.com</p>
+    <p>Phone: please use  e mail </p>
+</div>
+
+<div class="testimonial">
+    <h3>User Testimonials</h3>
+    <p></p>
+    <p>"This CV creator made my job applications so much easier!" - A Happy User</p>
+    <p>"Highly recommended for anyone looking to build a professional CV!" - Another User</p>
+</div>
+
+<!-- Music Toggle -->
+<div class="music-toggle" id="musicToggle">🎵</div>
+<div class="theme-toggle" id="themeToggle">🌓</div>
+<div class="font-size-adjust" id="fontSizeAdjust">A+</div>
+<div class="language-switcher">🌐 Language</div>
+<div class="dark-mode-toggle">Dark Mode</div>
+
+<!-- Background Music -->
+<audio id="backgroundMusic" loop>
+    <source src="your-sci-fi-music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<!-- JavaScript -->
+<script>
+    const starCanvas = document.getElementById('starCanvas');
+    const effectCanvas = document.getElementById('effectCanvas');
+    const galaxyCanvas = document.getElementById('galaxyCanvas');
+
+    const starCtx = starCanvas.getContext('2d');
+    const effectCtx = effectCanvas.getContext('2d');
+    const galaxyCtx = galaxyCanvas.getContext('2d');
+
+    starCanvas.width = effectCanvas.width = galaxyCanvas.width = window.innerWidth;
+    starCanvas.height = effectCanvas.height = galaxyCanvas.height = window.innerHeight;
+
+    // Starry Background
+    const stars = Array.from({ length: 200 }, () => ({
+        x: Math.random() * starCanvas.width,
+        y: Math.random() * starCanvas.height,
+        radius: Math.random() * 2 + 0.5,
+        alpha: Math.random(),
+        speed: Math.random() * 0.5 + 0.2,
+    }));
+
+    function drawStars() {
+        starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+        stars.forEach((star) => {
+            starCtx.beginPath();
+            starCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            starCtx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+            starCtx.fill();
+
+            star.y += star.speed;
+            if (star.y > starCanvas.height) star.y = 0;
+        });
+    }
+
+    // Meteor Effect
+    function drawMeteor() {
+        if (Math.random() < 0.03) {
+            effectCtx.strokeStyle = `rgba(255, 255, 255, 0.7)`;
+            effectCtx.lineWidth = Math.random() * 2 + 1;
+            effectCtx.beginPath();
+            const startX = Math.random() * effectCanvas.width;
+            effectCtx.moveTo(startX, 0);
+            effectCtx.lineTo(startX + 100, 100);
+            effectCtx.stroke();
+        }
+    }
+
+    // Galaxy Animation
+    function drawGalaxy() {
+        galaxyCtx.clearRect(0, 0, galaxyCanvas.width, galaxyCanvas.height);
+        const centerX = galaxyCanvas.width / 2;
+        const centerY = galaxyCanvas.height / 2;
+
+        for (let i = 0; i < 1000; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * galaxyCanvas.width / 3;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+
+            galaxyCtx.beginPath();
+            galaxyCtx.arc(x, y, Math.random() * 1.5, 0, Math.PI * 2);
+            galaxyCtx.fillStyle = `rgba(255, 255, 255, ${Math.random()})`;
+            galaxyCtx.fill();
+        }
+    }
+
+    drawGalaxy();
+
+    function animate() {
+        drawStars();
+        drawMeteor();
+        drawGalaxy();
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Music Toggle
+    const musicToggle = document.getElementById('musicToggle');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    let isPlaying = false;
+
+    musicToggle.addEventListener('click', () => {
+        if (isPlaying) {
+            backgroundMusic.pause();
+            musicToggle.textContent = "🎵";
+        } else {
+            backgroundMusic.play();
+            musicToggle.textContent = "🔇";
+        }
+        isPlaying = !isPlaying;
+    });
+
+    // Save as JSON
+    const saveJsonButton = document.getElementById('saveJson');
+    if (saveJsonButton) {
+        saveJsonButton.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('cvForm'));
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'cv.json';
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>
